@@ -49,18 +49,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := f.Sync(); err != nil {
-		log.Print("error reading temporary file: %v", err)
+		log.Print("error reading temporary file %q: %v", f.Name(), err)
 		return
 	}
 
 	if _, err := f.Seek(0, 0); err != nil {
-		log.Print("error reading temporary file: %v", err)
+		log.Print("error reading temporary file %q: %v", f.Name(), err)
 		return
 	}
 
 	n, err = f.Read(b)
 	if err != nil {
-		log.Print("error reading temporary file: %v", err)
+		log.Print("error reading temporary file %q: %v", f.Name(), err)
 		return
 	}
 
