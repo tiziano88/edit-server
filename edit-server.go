@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	port    = flag.Int("port", 8989, "port to run the server on")
-	command = flag.String("command", "~/edit.sh", "command to run to open the editor. Use '%s' as placeholder for the temporary file.")
+	port    = flag.Int("port", 8989, "port to listen on.")
+	command = flag.String("command", "edit.sh", "command to run to open the editor. It will receive the temporary file name as first argument.")
 )
 
 func main() {
@@ -29,12 +29,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	n, err := r.Body.Read(b)
 	if err != nil {
-		panic(err)
+		log.Print("error reading request body: %v", err)
+		return
 	}
 
 	f, err := ioutil.TempFile("", "edit-server-")
 	if err != nil {
-		panic(err)
+		log.Print("error creating temporary file: %v", err)
+		return
 	}
 	defer f.Close()
 
@@ -42,20 +44,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	err = exec.Command(*command, f.Name()).Run()
 	if err != nil {
-		panic(err)
+		log.Print("error executing edit command %q: %v", *command, err)
+		return
 	}
 
 	if err := f.Sync(); err != nil {
-		panic(err)
+		log.Print("error reading temporary file: %v", err)
+		return
 	}
 
 	if _, err := f.Seek(0, 0); err != nil {
-		panic(err)
+		log.Print("error reading temporary file: %v", err)
+		return
 	}
 
 	n, err = f.Read(b)
 	if err != nil {
-		panic(err)
+		log.Print("error reading temporary file: %v", err)
+		return
 	}
 
 	w.Write(b[:n])
