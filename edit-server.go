@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+
+	"github.com/tiziano88/completecommand"
 )
 
 var (
@@ -16,6 +18,7 @@ var (
 
 func main() {
 	flag.Parse()
+	completecommand.Complete()
 
 	http.HandleFunc("/", handler)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
