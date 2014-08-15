@@ -13,7 +13,7 @@ import (
 
 var (
 	port    = flag.Int("port", 8989, "port to listen on.")
-	command = flag.String("command", "edit.sh", "command to run to open the editor. It will receive the temporary file name as first argument.")
+	command = flag.String("command", "edit-in-gvim.sh", "command to run to open the editor. It will receive the temporary file name as first argument.")
 )
 
 func main() {
