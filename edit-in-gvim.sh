@@ -1,11 +1,26 @@
-#!/bin/sh
+#!/bin/bash
 
 #set -x
 
 F="/tmp/edit-server-xxx.md"
 
-# cat $1 | pandoc --atx-headers -f html -t markdown_github+fenced_code_blocks > $F
-cat $1 > $F
+readonly URL=$2
+
+case $URL in
+  *bigtop* )
+    readonly MD=true
+    ;;
+  *)
+    readonly MD=false
+esac
+
+if [[ $MD = true ]]; then
+  cat $1 | pandoc --atx-headers -f html -t markdown_github+fenced_code_blocks > $F
+else
+  cat $1 > $F
+fi
+
+echo md:$MD
 
 /usr/bin/gvim -f "$F" &
 
@@ -16,6 +31,10 @@ xdotool windowraise $WID
 xdotool windowfocus $WID
 
 wait
+# TODO: Check exit code.
 
-# cat $F | pandoc -f markdown_github -t html > $1
-cat $F > $1
+if [[ $MD = true ]]; then
+  cat $F | pandoc -f markdown_github -t html > $1
+else
+  cat $F > $1
+fi

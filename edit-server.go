@@ -29,7 +29,9 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("request")
+	log.Printf("request: %#v", r.Header)
+
+	url := r.Header.Get("X-Url")
 
 	b := make([]byte, 100000)
 
@@ -50,7 +52,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	f.Write(b[:n])
 
-	err = exec.Command(*command, f.Name()).Run()
+	err = exec.Command(*command, f.Name(), url).Run()
 	if err != nil {
 		log.Printf("error executing edit command %q: %v", *command, err)
 		return
